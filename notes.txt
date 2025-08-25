@@ -1,0 +1,1 @@
+./target/release/sigmos-train.exe -n enhanced -d textfiles -o enhanced.sig -v -r 0.01

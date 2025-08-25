@@ -1,0 +1,4 @@
+.claude/
+.git/
+target/
+textfiles/*

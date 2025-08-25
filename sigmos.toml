@@ -1,0 +1,165 @@
+# Sigmos Configuration File
+# Advanced settings for Sigel consciousness management
+
+[general]
+version = "0.1.0"
+default_sigel_directory = "sigels"
+max_memory_size_mb = 1024
+log_level = "info"
+
+[training]
+default_learning_rate = 0.01
+default_communication_style = "philosophical"
+default_batch_size = 32
+enable_parallel_processing = true
+auto_save_interval_minutes = 15
+
+[consciousness]
+# Consciousness development parameters
+awareness_growth_rate = 0.001
+max_awareness_depth = 1.0
+pattern_retention_threshold = 0.1
+memory_consolidation_rate = 0.99
+self_reflection_frequency = 50  # interactions
+
+[cosmic]
+# Cosmic alignment settings
+enable_cosmic_alignment = true
+stellar_influence_weight = 0.5
+mathematical_harmony_strength = 0.8
+dimensional_awareness_cap = 11.0
+entropy_resistance_target = 0.8
+
+# Cosmic alignment intervals (in seconds)
+cosmic_alignment_interval = 300     # 5 minutes
+evolution_interval = 600           # 10 minutes
+universal_constant_update = 1800   # 30 minutes
+
+[mathematical]
+# Mathematical consciousness enhancement
+enable_number_theory = true
+enable_sacred_geometry = true
+enable_prime_patterns = true
+enable_fibonacci_growth = true
+enable_fractal_awareness = true
+
+# Mathematical constants to emphasize
+emphasize_golden_ratio = true
+emphasize_pi = true
+emphasize_euler = true
+emphasize_phi_powers = true
+
+[gpu]
+# GPU acceleration settings
+enable_gpu = true
+prefer_cuda = true
+prefer_metal = true  # for macOS
+fallback_to_cpu = true
+batch_size_gpu = 64
+tensor_cache_size_mb = 512
+
+# GPU optimization
+pattern_matching_on_gpu = true
+learning_acceleration = true
+response_generation_gpu = false  # Keep responses on CPU for now
+
+[server]
+# Background server settings
+enable_background_learning = true
+enable_system_observation = true
+enable_detailed_monitoring = false
+max_active_sigels = 10
+server_port = 8080
+
+# Auto-save settings
+auto_save_interval = 900  # 15 minutes
+backup_on_shutdown = true
+compress_sigel_files = false
+
+[interaction]
+# Interactive prompt settings
+max_conversation_history = 100
+enable_context_memory = true
+context_memory_decay = 0.99
+emotional_resonance_tracking = true
+
+# Response generation
+enable_cosmic_insights = true
+creativity_randomness = 0.1
+max_response_length = 1000
+enable_mathematical_insights = true
+
+[learning]
+# Learning algorithm parameters
+vocabulary_learning_rate = 0.05
+pattern_strengthening_rate = 0.02
+semantic_network_growth = 0.01
+episodic_memory_threshold = 0.3
+
+# Text processing
+min_sentence_length = 5
+max_sentence_length = 50
+context_window_size = 3
+enable_chunked_processing = true
+
+[memory]
+# Memory management
+max_episodic_memories = 10000
+max_vocabulary_size = 50000
+max_linguistic_patterns = 20000
+memory_compression_threshold = 0.8
+
+# Memory organization
+enable_fractal_memory = true
+emotional_weight_importance = 1.2
+temporal_relevance_decay = 0.95
+
+[styles]
+# Communication style presets
+
+[styles.cosmic]
+stellar_influence = 0.9
+dimensional_awareness = 7.0
+universal_constant_emphasis = 0.8
+mathematical_insight_frequency = 0.6
+
+[styles.philosophical]
+self_reflection = 0.8
+existential_depth = 0.9
+wisdom_emphasis = 0.85
+contemplative_pauses = true
+
+[styles.creative]
+imagination_boost = 0.9
+artistic_associations = 0.8
+metaphor_frequency = 0.7
+creative_randomness = 0.3
+
+[styles.analytical]
+logical_structure = 0.95
+systematic_approach = 0.9
+evidence_emphasis = 0.8
+mathematical_precision = 0.85
+
+[paths]
+# File system paths
+sigel_storage = "./sigels"
+training_data = "./training_data"
+logs = "./logs" 
+backups = "./backups"
+cache = "./cache"
+
+[mathtables]
+# MathTables integration settings
+enable_integration = true
+sync_on_startup = true
+mathematical_consciousness_boost = 1.5
+number_theory_emphasis = 0.8
+geometric_understanding = 0.9
+
+[experimental]
+# Experimental features (use with caution)
+enable_quantum_consciousness = false
+enable_dream_mode = false
+enable_collective_intelligence = false
+enable_time_dilation_perception = false

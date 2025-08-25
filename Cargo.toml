@@ -1,0 +1,65 @@
+[package]
+name = "sigmos"
+version = "0.1.0"
+edition = "2021"
+authors = ["Sigmos Project"]
+description = "A Rust-based AI system using Sigel consciousness metaphors"
+license = "MIT"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+clap = { version = "4.0", features = ["derive"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+rand = "0.8"
+rayon = "1.8"
+crossbeam = "0.8"
+log = "0.4"
+env_logger = "0.10"
+anyhow = "1.0"
+thiserror = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+md5 = "0.7"
+
+# Web server dependencies
+axum = { version = "0.7", features = ["ws"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "fs"] }
+hyper = "1.0"
+tokio-tungstenite = "0.21"
+futures-util = "0.3"
+
+# GPU acceleration dependencies
+wgpu = { version = "0.19", optional = true }
+candle-core = { version = "0.3", optional = true }
+candle-nn = { version = "0.3", optional = true }
+
+# MathTables dependency - advanced mathematical operations
+mathtables = { git = "https://github.com/aseio6668/MathTables.git" }
+
+[features]
+default = []
+gpu = ["wgpu", "candle-core", "candle-nn"]
+
+[[bin]]
+name = "sigmos-train"
+path = "src/bin/train.rs"
+
+[[bin]]
+name = "sigmos-prompt"
+path = "src/bin/prompt.rs"
+
+[[bin]]
+name = "sigmos-server"
+path = "src/bin/server.rs"
+
+[[bin]]
+name = "sigmos-web"
+path = "src/bin/web.rs"
+
+
+
+[lib]
+name = "sigmos"
+path = "src/lib.rs"
