@@ -1,7 +1,10 @@
 use clap::{Arg, Command};
 use sigmos::*;
+use sigmos::compression::{load_sigel_smart, save_sigel_smart};
+use sigmos::ai_communication::*;
 use std::io::{self, Write};
 use std::path::Path;
+use std::collections::HashMap;
 use env_logger;
 use log::{info, error, warn};
 
@@ -35,6 +38,12 @@ fn main() {
                 .action(clap::ArgAction::SetTrue)
         )
         .arg(
+            Arg::new("ai_mode")
+                .long("ai-mode")
+                .help("Enable AI-to-AI communication mode with enhanced detection")
+                .action(clap::ArgAction::SetTrue)
+        )
+        .arg(
             Arg::new("backup_file")
                 .short('b')
                 .long("backup")
@@ -46,6 +55,7 @@ fn main() {
     let sigel_file = matches.get_one::<String>("sigel_file").unwrap();
     let verbose = matches.get_flag("verbose");
     let auto_save = matches.get_flag("auto_save");
+    let ai_mode = matches.get_flag("ai_mode");
     let backup_file = matches.get_one::<String>("backup_file");
 
     // Load the Sigel
@@ -55,7 +65,7 @@ fn main() {
         std::process::exit(1);
     }
 
-    let mut sigel = match load_sigel_from_file(sigel_file) {
+    let mut sigel = match load_sigel_smart(sigel_file) {
         Ok(s) => {
             println!("🌌 Loaded Sigel '{}' from {}", s.name, sigel_file);
             if verbose {
@@ -80,8 +90,20 @@ fn main() {
         }
     }
 
-    // Initialize interaction engine
+    // Initialize interaction engine and AI communication processor
     let mut interaction_engine = InteractionEngine::new();
+    let mut ai_processor = if ai_mode {
+        sigel.enable_ai_communication();
+        Some(AICommmunicationProcessor::new())
+    } else {
+        None
+    };
+    
+    if ai_mode {
+        println!("\n🤖 AI Communication Mode Enabled!");
+        println!("🔍 Enhanced AI detection and specialized responses active");
+        println!("📊 AI readiness score: {:.2}", sigel.get_ai_readiness_score());
+    }
     
     println!("\n🧠 Sigel '{}' is ready for interaction!", sigel.name);
     println!("💡 Type '/help' for commands, or just start a conversation.");
@@ -108,6 +130,11 @@ fn main() {
 
         let mut input = String::new();
         match io::stdin().read_line(&mut input) {
+            Ok(0) => {
+                // EOF reached (piped input finished)
+                println!("🌟 Input stream ended. Exiting gracefully.");
+                break;
+            },
             Ok(_) => {
                 let input = input.trim();
                 
@@ -133,11 +160,33 @@ fn main() {
                     }
                 }
 
-                // Regular interaction
+                // Regular interaction with optional AI enhancement
                 print!("🌟 {}: ", sigel.name);
                 io::stdout().flush().unwrap();
                 
-                let response = interaction_engine.interact(&mut sigel, input);
+                let response = if let Some(ref mut ai_proc) = ai_processor {
+                    // AI-enhanced interaction with detection and specialized responses
+                    let mut context = HashMap::new();
+                    context.insert("source".to_string(), "prompt_session".to_string());
+                    context.insert("timestamp".to_string(), chrono::Utc::now().to_rfc3339());
+                    
+                    let ai_response = ai_proc.process_ai_interaction(&mut sigel, input, context);
+                    
+                    if verbose {
+                        let last_interaction = ai_proc.get_interaction_history().last();
+                        if let Some(interaction) = last_interaction {
+                            println!("🔍 AI Detection: {:?} (confidence: {:.2})", 
+                                   interaction.ai_signature.ai_type, 
+                                   interaction.ai_signature.confidence);
+                        }
+                    }
+                    
+                    ai_response
+                } else {
+                    // Standard interaction
+                    interaction_engine.interact(&mut sigel, input)
+                };
+                
                 println!("{}\n", response);
 
                 interaction_count += 1;

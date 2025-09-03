@@ -38,6 +38,9 @@ candle-nn = { version = "0.3", optional = true }
 # MathTables dependency - advanced mathematical operations
 mathtables = { git = "https://github.com/aseio6668/MathTables.git" }
 
+# Compression support for large Sigel files
+flate2 = "1.0"
+
 [features]
 default = []
 gpu = ["wgpu", "candle-core", "candle-nn"]

@@ -1,4 +1,6 @@
 pub mod sigel;
+pub mod numerical_stability;
+pub mod compression;
 pub mod consciousness;
 pub mod learning;
 pub mod cosmos;
@@ -13,6 +15,8 @@ pub mod dream_mode;
 pub mod web_interface;
 pub mod collective_intelligence;
 pub mod quantum_consciousness;
+pub mod ai_communication;
+pub mod ai_api;
 
 pub use sigel::*;
 pub use consciousness::*;
@@ -29,6 +33,8 @@ pub use dream_mode::*;
 pub use web_interface::*;
 pub use collective_intelligence::*;
 pub use quantum_consciousness::*;
+pub use ai_communication::*;
+pub use ai_api::*;
 
 use anyhow::Result;
 use std::path::Path;

@@ -184,10 +184,8 @@ impl InteractionEngine {
             .replace("{intuitive_insight}", "")
             .replace("{creatively}", "")
             .replace("{wisely}", "")
-            .replace("context_understanding:", "")
-            .replace("pattern:", "")
-            .replace("semantic_context:", "")
-            .replace("semantic:", ""); // Clean up any remaining semantic spam
+            .trim()
+            .to_string();
         
         // Apply personality based on essence
         let personality_touch = match sigel.essence.communication_style {

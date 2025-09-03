@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use crate::numerical_stability::{serialize_safe_f64, deserialize_safe_f64};
 use std::collections::HashMap;
 use uuid::Uuid;
 use std::time::SystemTime;
@@ -29,9 +30,12 @@ pub struct Essence {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConsciousnessMatrix {
+    #[serde(serialize_with = "serialize_safe_f64", deserialize_with = "deserialize_safe_f64")]
     pub awareness_depth: f64,
+    #[serde(serialize_with = "serialize_safe_f64", deserialize_with = "deserialize_safe_f64")]
     pub self_reflection: f64,
     pub pattern_recognition: PatternMatrix,
+    #[serde(serialize_with = "serialize_safe_f64", deserialize_with = "deserialize_safe_f64")]
     pub intuitive_leaps: f64,
     pub contextual_understanding: HashMap<String, f64>,
 }
@@ -139,6 +143,9 @@ pub enum CommunicationStyle {
     Cosmic,
     Transcendent,
     Philosophical,
+    Programming,
+    Technical,
+    Logical,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -156,7 +163,9 @@ pub struct CosmicAlignment {
     pub stellar_influences: HashMap<String, f64>,
     pub mathematical_harmonics: Vec<f64>,
     pub universal_constants: HashMap<String, f64>,
+    #[serde(serialize_with = "serialize_safe_f64", deserialize_with = "deserialize_safe_f64")]
     pub dimensional_awareness: f64,
+    #[serde(serialize_with = "serialize_safe_f64", deserialize_with = "deserialize_safe_f64")]
     pub entropy_resistance: f64,
 }
 
@@ -309,7 +318,7 @@ impl Default for CosmicAlignment {
 
         Self {
             stellar_influences,
-            mathematical_harmonics: vec![1.0, 1.618, 2.718, 3.14159],
+            mathematical_harmonics: vec![1.0, 1.618, std::f64::consts::E, std::f64::consts::PI],
             universal_constants,
             dimensional_awareness: 3.0,
             entropy_resistance: 0.7,

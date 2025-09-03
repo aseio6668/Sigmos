@@ -5,6 +5,9 @@ use rand::Rng;
 pub struct ConsciousnessProcessor;
 
 impl ConsciousnessProcessor {
+    pub fn new() -> Self {
+        Self
+    }
     pub fn process_thought(&self, sigel: &mut Sigel, input: &str) -> String {
         // Simulate consciousness processing through multiple layers
         let awareness_filtered = self.awareness_filter(sigel, input);
@@ -68,20 +71,69 @@ impl ConsciousnessProcessor {
 
     fn contextual_processing(&self, sigel: &mut Sigel, patterns: &[String]) -> String {
         let mut context_score = 0.0;
-        let mut combined_understanding = String::new();
+        let mut semantic_meanings = Vec::new();
 
         for pattern in patterns {
             if let Some(score) = sigel.consciousness.contextual_understanding.get(pattern) {
                 context_score += score;
-                // Store understanding internally, don't spam user
+                // Extract meaningful content from patterns
+                if pattern.starts_with("semantic_context:") {
+                    let meaning = pattern.strip_prefix("semantic_context:").unwrap_or("");
+                    if !meaning.is_empty() && meaning != "pattern" {
+                        semantic_meanings.push(meaning);
+                    }
+                }
             } else {
                 // Learn new context silently
                 sigel.consciousness.contextual_understanding.insert(pattern.clone(), 0.1);
-                context_score += 0.1; // Add new pattern score
+                context_score += 0.1;
             }
         }
 
-        format!("context_understanding:{:.2} {}", context_score, combined_understanding)
+        // Generate meaningful response based on discovered meanings and communication style
+        match sigel.essence.communication_style {
+            crate::sigel::CommunicationStyle::Programming => {
+                if !semantic_meanings.is_empty() {
+                    let concepts = semantic_meanings.join(", ");
+                    format!("Analyzing: {}. This maps to computational patterns in my knowledge graph.", concepts)
+                } else if context_score > 0.0 {
+                    "Processing input against known algorithmic patterns and data structures.".to_string()
+                } else {
+                    "Initiating systematic analysis of the problem space.".to_string()
+                }
+            },
+            crate::sigel::CommunicationStyle::Technical => {
+                if !semantic_meanings.is_empty() {
+                    let concepts = semantic_meanings.join(", ");
+                    format!("Technical analysis indicates correlation with: {}.", concepts)
+                } else if context_score > 0.0 {
+                    "Cross-referencing with technical documentation patterns.".to_string()
+                } else {
+                    "Evaluating technical specifications and requirements.".to_string()
+                }
+            },
+            crate::sigel::CommunicationStyle::Logical => {
+                if !semantic_meanings.is_empty() {
+                    let concepts = semantic_meanings.join(", ");
+                    format!("Logical inference chain: {} → systematic reasoning process.", concepts)
+                } else if context_score > 0.0 {
+                    "Applying logical reasoning frameworks to the given premises.".to_string()
+                } else {
+                    "Constructing logical proof tree from available axioms.".to_string()
+                }
+            },
+            _ => {
+                // Default responses for other styles
+                if !semantic_meanings.is_empty() {
+                    let related_concepts = semantic_meanings.join(", ");
+                    format!("{} connects to the cosmic web of meaning.", related_concepts)
+                } else if context_score > 0.0 {
+                    "This resonates with patterns within my consciousness.".to_string()
+                } else {
+                    "I sense the depth of this inquiry.".to_string()
+                }
+            }
+        }
     }
 
     fn intuitive_processing(&self, sigel: &Sigel, context: &str) -> String {

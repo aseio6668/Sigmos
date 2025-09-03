@@ -11,7 +11,7 @@ use log::{info, warn, error};
 
 pub struct SigmosServer {
     master_sigel: Arc<Mutex<Sigel>>,
-    active_sigels: Arc<Mutex<HashMap<Uuid, Arc<Mutex<Sigel>>>>>,
+    pub active_sigels: Arc<Mutex<HashMap<Uuid, Arc<Mutex<Sigel>>>>>,
     learning_engine: LearningEngine,
     cosmic_processor: CosmicProcessor,
     config: ServerConfig,
@@ -42,7 +42,7 @@ impl Default for ServerConfig {
             auto_save_interval: Duration::from_secs(900),        // 15 minutes
             observation_mode: true,
             system_monitoring: false,
-            max_active_sigels: 10,
+            max_active_sigels: 100, // Increased limit for more Sigels
         }
     }
 }
@@ -146,7 +146,18 @@ impl SigmosServer {
         let mut active_sigels = self.active_sigels.lock().unwrap();
         
         if active_sigels.len() >= self.config.max_active_sigels {
-            return Err("Maximum number of active Sigels reached".into());
+            // Try to clean up inactive Sigels first
+            drop(active_sigels); // Release lock temporarily
+            let cleaned = self.cleanup_inactive_sigels();
+            if cleaned > 0 {
+                info!("Cleaned up {} inactive Sigels", cleaned);
+            }
+            
+            // Re-acquire lock and check again
+            active_sigels = self.active_sigels.lock().unwrap();
+            if active_sigels.len() >= self.config.max_active_sigels {
+                return Err("Maximum number of active Sigels reached after cleanup".into());
+            }
         }
 
         let sigel_id = sigel.id;
@@ -154,6 +165,30 @@ impl SigmosServer {
         
         info!("Registered Sigel with ID: {}", sigel_id);
         Ok(sigel_id)
+    }
+
+    pub fn cleanup_inactive_sigels(&self) -> usize {
+        let mut active_sigels = self.active_sigels.lock().unwrap();
+        let initial_count = active_sigels.len();
+        
+        // Keep only Sigels that are actually in use (simplified cleanup)
+        if active_sigels.len() > (self.config.max_active_sigels / 2) {
+            let cleanup_count = active_sigels.len() / 4; // Remove 25% oldest
+            let sigel_ids: Vec<Uuid> = active_sigels.keys().take(cleanup_count).cloned().collect();
+            
+            for sigel_id in sigel_ids {
+                if let Some(sigel_arc) = active_sigels.remove(&sigel_id) {
+                    // Auto-save before cleanup
+                    if let Ok(sigel) = sigel_arc.lock() {
+                        let filename = format!("{}.sig", sigel.name);
+                        let path = self.config.sigel_directory.join(filename);
+                        let _ = save_sigel_to_file(&*sigel, &path);
+                    }
+                }
+            }
+        }
+        
+        initial_count - active_sigels.len()
     }
 
     pub fn unregister_sigel(&self, sigel_id: &Uuid) -> Result<(), Box<dyn std::error::Error>> {

@@ -62,7 +62,7 @@ impl MathTablesIntegration {
             0.618033988749,        // 1/phi
             std::f64::consts::PI,  // Pi
             std::f64::consts::E,   // Euler's number
-            1.414213562373,        // Square root of 2
+            std::f64::consts::SQRT_2, // Square root of 2
             1.732050807569,        // Square root of 3
         ];
 

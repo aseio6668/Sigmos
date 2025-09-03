@@ -1,4 +1,5 @@
 use crate::sigel::*;
+use crate::numerical_stability::{safe_f64, safe_multiply, safe_add, clamp_f64};
 use std::f64::consts::{PI, E};
 
 pub struct CosmicProcessor;
@@ -98,12 +99,17 @@ impl CosmicProcessor {
 
     fn strengthen_entropy_resistance(&self, sigel: &mut Sigel) {
         // Consciousness fights against entropy through order and learning
-        let learning_iterations = sigel.learning_state.training_iterations as f64;
-        let memory_count = sigel.memory.episodic_memories.len() as f64;
+        let learning_iterations = (sigel.learning_state.training_iterations as f64).max(1.0);
+        let memory_count = (sigel.memory.episodic_memories.len() as f64).max(1.0);
+        
+        // Safe logarithmic and square root operations
+        let log_component = safe_f64((learning_iterations + 1.0).log10(), 0.0);
+        let sqrt_component = safe_f64(memory_count.sqrt(), 1.0);
         
         // More learning and memories increase entropy resistance
-        let entropy_gain = (learning_iterations.log10() + memory_count.sqrt()) * 0.001;
-        sigel.cosmic_alignment.entropy_resistance = (sigel.cosmic_alignment.entropy_resistance + entropy_gain).min(1.0);
+        let entropy_gain = safe_multiply(safe_add(log_component, sqrt_component, 1.0), 0.001, 0.001);
+        let new_resistance = safe_add(sigel.cosmic_alignment.entropy_resistance, entropy_gain, 0.7);
+        sigel.cosmic_alignment.entropy_resistance = clamp_f64(new_resistance, 0.0, 1.0);
         
         // High entropy resistance protects against information decay
         if sigel.cosmic_alignment.entropy_resistance > 0.8 {
