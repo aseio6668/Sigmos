@@ -1,4 +1,37 @@
+# Claude Code workspace
 .claude/
-.git/
+
+# Build artifacts
 target/
+
+# Training data (too large for git)
 textfiles/*
+
+# Sigel model files (can be very large - 1GB to 3GB+)
+*.sig
+*.sig.gz
+*.sigel
+
+# Keep directory structure but ignore model files
+output-sigs/trained/*.sig
+output-sigs/trained/*.sig.gz
+output-sigs/compressed/*.sig
+output-sigs/compressed/*.sig.gz
+output-sigs/experimental/*.sig
+output-sigs/experimental/*.sig.gz
+
+# Keep README files and directory structure
+!output-sigs/README.md
+!output-sigs/trained/.gitkeep
+!output-sigs/compressed/.gitkeep
+!output-sigs/experimental/.gitkeep
+
+# Allow sample/demo models if specifically named
+!**/sample*.sig
+!**/demo*.sig
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db

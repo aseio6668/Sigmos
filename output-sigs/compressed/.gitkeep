@@ -1,0 +1,2 @@
+# This file ensures the compressed/ directory is tracked in git
+# Place compressed .sig.gz models here (saves ~97% space)
