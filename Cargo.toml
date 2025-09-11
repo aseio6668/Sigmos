@@ -3,8 +3,13 @@ name = "sigmos"
 version = "0.1.0"
 edition = "2021"
 authors = ["Sigmos Project"]
-description = "A Rust-based AI system using Sigel consciousness metaphors"
+description = "A Rust-based AI system using Sigel consciousness metaphors for text processing, image generation, and consciousness simulation"
 license = "MIT"
+repository = "https://github.com/aseio6668/sigmos"
+documentation = "https://docs.rs/sigmos"
+readme = "README.md"
+keywords = ["ai", "consciousness", "nlp", "image-generation", "rust"]
+categories = ["science", "multimedia", "text-processing"]
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
@@ -38,6 +43,9 @@ candle-nn = { version = "0.3", optional = true }
 # MathTables dependency - advanced mathematical operations
 mathtables = { git = "https://github.com/aseio6668/MathTables.git" }
 
+# Sigmanta dependencies
+reqwest = { version = "0.11", features = ["json"] }
+
 [features]
 default = []
 gpu = ["wgpu", "candle-core", "candle-nn"]
@@ -57,6 +65,10 @@ path = "src/bin/server.rs"
 [[bin]]
 name = "sigmos-web"
 path = "src/bin/web.rs"
+
+[[bin]]
+name = "sigmanta"
+path = "src/bin/sigmanta.rs"
 
 
 

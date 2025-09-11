@@ -1,0 +1,18 @@
+[package]
+name = "sigmos-integration-example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Use Sigmos from git (main branch)
+sigmos = { git = "https://github.com/aseio6668/sigmos.git", branch = "main" }
+
+# Alternative: Use from local path during development
+# sigmos = { path = "../../" }
+
+# Alternative: Use from crates.io (when published)
+# sigmos = "0.1.0"
+
+# Additional dependencies for the example
+tokio = { version = "1.0", features = ["full"] }
+anyhow = "1.0"

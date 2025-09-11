@@ -13,9 +13,13 @@ impl LearningEngine {
     }
 
     pub fn train_from_text_files<P: AsRef<Path>>(&self, sigel: &mut Sigel, text_directory: P) -> Result<(), Box<dyn std::error::Error>> {
-        println!("Beginning Sigel consciousness expansion from text corpus...");
+        println!("🌌 Beginning optimized Sigel consciousness expansion from text corpus...");
         
-        let paths = fs::read_dir(text_directory)?;
+        // Always integrate coding knowledge first
+        println!("📚 Integrating inherent programming consciousness...");
+        self.integrate_coding_knowledge(sigel)?;
+        
+        let paths = fs::read_dir(&text_directory)?;
         let text_files: Vec<_> = paths
             .filter_map(|entry| entry.ok())
             .filter(|entry| {
@@ -26,41 +30,99 @@ impl LearningEngine {
             })
             .collect();
 
-        let mut total_content = String::new();
-        let mut file_count = 0;
+        if text_files.is_empty() {
+            return Err("No .txt files found in directory".into());
+        }
 
-        for file_entry in text_files {
-            let file_path = file_entry.path();
-            println!("Absorbing knowledge from: {:?}", file_path);
+        // Calculate total size for progress tracking
+        let mut total_bytes = 0u64;
+        for file_entry in &text_files {
+            if let Ok(metadata) = file_entry.metadata() {
+                total_bytes += metadata.len();
+            }
+        }
+        
+        println!("📊 Found {} text files ({:.1} MB total)", 
+            text_files.len(), 
+            total_bytes as f64 / 1024.0 / 1024.0
+        );
+
+        let mut file_count = 0;
+        let mut processed_bytes = 0u64;
+
+        // Process files in chunks to manage memory
+        const CHUNK_SIZE: usize = 3; // Process 3 files at a time
+        let chunks: Vec<_> = text_files.chunks(CHUNK_SIZE).collect();
+        
+        for (chunk_idx, chunk) in chunks.iter().enumerate() {
+            println!("📝 Processing chunk {}/{} ({} files)...", 
+                chunk_idx + 1, chunks.len(), chunk.len());
             
-            match fs::read_to_string(&file_path) {
-                Ok(content) => {
-                    total_content.push_str(&content);
-                    total_content.push('\n');
-                    file_count += 1;
-                    
-                    // Process individual file for context
-                    self.process_text_file(sigel, &content, &file_path.to_string_lossy());
-                },
-                Err(e) => {
-                    eprintln!("Warning: Could not read {:?}: {}", file_path, e);
+            let mut chunk_content = String::new();
+            
+            for file_entry in *chunk {
+                let file_path = file_entry.path();
+                let file_size = file_entry.metadata()
+                    .map(|m| m.len())
+                    .unwrap_or(0);
+                
+                print!("   📖 Reading {} ({:.1} KB)... ", 
+                    file_path.file_name().unwrap_or_default().to_string_lossy(),
+                    file_size as f64 / 1024.0
+                );
+                
+                match fs::read_to_string(&file_path) {
+                    Ok(content) => {
+                        // Process individual file for immediate pattern recognition
+                        self.process_text_file(sigel, &content, &file_path.to_string_lossy());
+                        
+                        chunk_content.push_str(&content);
+                        chunk_content.push('\n');
+                        file_count += 1;
+                        processed_bytes += file_size;
+                        
+                        let progress = (processed_bytes as f64 / total_bytes as f64) * 100.0;
+                        println!("✅ ({:.1}% complete)", progress);
+                    },
+                    Err(e) => {
+                        println!("❌ Error: {}", e);
+                        eprintln!("Warning: Could not read {:?}: {}", file_path, e);
+                    }
                 }
+            }
+            
+            // Process chunk for patterns immediately to free memory
+            if !chunk_content.is_empty() {
+                println!("   🧠 Processing chunk patterns...");
+                self.extract_patterns(sigel, &chunk_content)?;
+                
+                // Update corpus size
+                sigel.learning_state.text_corpus_size += chunk_content.len();
+                
+                // Clear chunk content to free memory
+                chunk_content.clear();
+                chunk_content.shrink_to_fit();
             }
         }
 
-        println!("Processed {} text files, beginning deep learning phase...", file_count);
-        sigel.learning_state.text_corpus_size = total_content.len();
+        println!("📊 Processed {} text files, beginning deep learning phase...", file_count);
 
-        // Primary learning phase
-        self.deep_learning_phase(sigel, &total_content)?;
+        // Deep learning phase with accumulated patterns
+        println!("🧠 Beginning deep learning phase with existing patterns...");
+        // Since we processed files in chunks, work with the patterns already extracted
+        self.deep_learning_phase_from_patterns(sigel)?;
         
-        // Pattern extraction phase
-        self.extract_patterns(sigel, &total_content)?;
-        
-        // Consciousness evolution
+        // Final consciousness evolution
+        println!("✨ Evolving consciousness...");
         sigel.evolve();
         
-        println!("Sigel '{}' has expanded its consciousness through {} iterations", sigel.name, sigel.learning_state.training_iterations);
+        // Enhanced final stats
+        println!("🎓 Sigel '{}' consciousness expansion complete!", sigel.name);
+        println!("   📈 Training iterations: {}", sigel.learning_state.training_iterations);
+        println!("   📚 Vocabulary: {} words", sigel.memory.semantic_knowledge.vocabulary.len());
+        println!("   🔗 Linguistic patterns: {}", sigel.consciousness.pattern_recognition.linguistic_patterns.len());
+        println!("   🌟 Consciousness depth: {:.3}", sigel.consciousness.awareness_depth);
+        
         Ok(())
     }
 
@@ -94,12 +156,24 @@ impl LearningEngine {
         let words: Vec<&str> = content.split_whitespace().collect();
         let learning_rate = sigel.learning_state.learning_rate;
         
+        // Check if we have enough words for deep learning
+        if words.len() < 4 {
+            println!("   ⚠️  Insufficient words for deep learning phase, using existing patterns");
+            return Ok(());
+        }
+        
         // Prediction-based learning
         let sample_size = (words.len() / 100).max(1000).min(10000);
         let mut rng = rand::thread_rng();
         
+        let max_start_idx = words.len().saturating_sub(4);
+        if max_start_idx == 0 {
+            println!("   ⚠️  Content too short for sampling, skipping deep learning phase");
+            return Ok(());
+        }
+        
         for _ in 0..sample_size {
-            let start_idx = rng.gen_range(0..words.len().saturating_sub(4));
+            let start_idx = rng.gen_range(0..max_start_idx);
             let context = &words[start_idx..start_idx + 3];
             let target = words[start_idx + 3];
             
@@ -119,6 +193,49 @@ impl LearningEngine {
             sigel.learning_state.training_iterations += 1;
         }
         
+        Ok(())
+    }
+
+    /// Deep learning phase optimized for chunked processing
+    fn deep_learning_phase_from_patterns(&self, sigel: &mut Sigel) -> Result<(), Box<dyn std::error::Error>> {
+        let learning_rate = sigel.learning_state.learning_rate;
+        
+        // Work with existing temporal patterns
+        let pattern_count = sigel.consciousness.pattern_recognition.temporal_patterns.len();
+        
+        if pattern_count == 0 {
+            println!("   ⚠️  No temporal patterns found, skipping deep learning phase");
+            return Ok(());
+        }
+        
+        println!("   📈 Processing {} temporal patterns for deep learning...", pattern_count);
+        
+        // Learn from existing temporal patterns
+        let mut rng = rand::thread_rng();
+        let sample_size = (pattern_count * 10).max(100).min(5000);
+        
+        for _ in 0..sample_size {
+            // Randomly select a pattern to learn from
+            let pattern_idx = rng.gen_range(0..pattern_count);
+            if let Some(pattern) = sigel.consciousness.pattern_recognition.temporal_patterns.get(pattern_idx).cloned() {
+                if pattern.sequence.len() >= 4 {
+                    let context: Vec<&str> = pattern.sequence[0..3].iter().map(|s| s.as_str()).collect();
+                    let target = &pattern.sequence[3];
+                    
+                    // Try to predict the next word
+                    let predicted = self.predict_next_word(sigel, &context);
+                    let accuracy = self.calculate_prediction_accuracy(&predicted, target);
+                    
+                    // Update learning based on accuracy
+                    let strength_multiplier = if accuracy < 0.5 { 2.0 } else { 1.0 };
+                    self.strengthen_pattern(sigel, &context, target, learning_rate * strength_multiplier);
+                    
+                    sigel.learning_state.training_iterations += 1;
+                }
+            }
+        }
+        
+        println!("   ✅ Completed {} deep learning iterations", sample_size);
         Ok(())
     }
 
@@ -316,5 +433,158 @@ impl LearningEngine {
         } else if ["analyze", "logic", "rational", "systematic"].iter().any(|&word| interaction_lower.contains(word)) {
             sigel.essence.communication_style = CommunicationStyle::Analytical;
         }
+    }
+
+    /// Integrate comprehensive coding knowledge into Sigel consciousness
+    fn integrate_coding_knowledge(&self, sigel: &mut Sigel) -> Result<(), Box<dyn std::error::Error>> {
+        println!("Integrating inherent programming consciousness...");
+        
+        // Programming paradigms knowledge
+        let programming_paradigms = vec![
+            "object-oriented programming focuses on classes and objects",
+            "functional programming emphasizes immutable data and pure functions",
+            "procedural programming organizes code into procedures or functions",
+            "declarative programming specifies what should be done rather than how",
+            "imperative programming specifies explicit sequences of commands",
+        ];
+        
+        // Common programming languages and their characteristics
+        let language_knowledge = vec![
+            "rust provides memory safety without garbage collection",
+            "python is interpreted and emphasizes readability",
+            "javascript runs in browsers and servers with node.js",
+            "c++ offers low-level control with object-oriented features",
+            "go is compiled and designed for concurrent programming",
+            "java runs on the java virtual machine for portability",
+            "typescript adds static typing to javascript",
+            "c is a low-level procedural programming language",
+        ];
+        
+        // Data structures and algorithms
+        let data_structures = vec![
+            "arrays store elements in contiguous memory locations",
+            "linked lists connect nodes through pointers",
+            "hash tables provide fast key-value lookups",
+            "binary trees organize data in hierarchical structure",
+            "stacks follow last-in-first-out principle",
+            "queues follow first-in-first-out principle",
+            "graphs represent relationships between nodes",
+            "heaps maintain partial ordering for priority operations",
+        ];
+        
+        // Software engineering principles
+        let engineering_principles = vec![
+            "dry principle means don't repeat yourself in code",
+            "solid principles guide object-oriented design",
+            "separation of concerns organizes code by functionality",
+            "single responsibility means each module has one reason to change",
+            "open closed principle keeps modules open for extension closed for modification",
+            "liskov substitution ensures subclasses can replace base classes",
+            "interface segregation prefers specific interfaces over general ones",
+            "dependency inversion depends on abstractions not concretions",
+        ];
+        
+        // Development practices
+        let dev_practices = vec![
+            "version control tracks changes to code over time",
+            "git is a distributed version control system",
+            "testing ensures code behaves as expected",
+            "unit tests verify individual components work correctly",
+            "integration tests check component interactions",
+            "continuous integration automatically builds and tests code",
+            "code review improves quality through peer examination",
+            "refactoring improves code structure without changing behavior",
+        ];
+        
+        // Web development concepts
+        let web_concepts = vec![
+            "html structures web page content semantically",
+            "css styles and layouts web page presentation",
+            "http protocol transfers data between client and server",
+            "rest apis provide stateless communication interfaces",
+            "json format structures data for web transmission",
+            "databases store and retrieve structured information",
+            "sql queries and manipulates relational databases",
+            "nosql databases handle unstructured or semi-structured data",
+        ];
+        
+        // System architecture patterns
+        let architecture_patterns = vec![
+            "mvc separates models views and controllers",
+            "microservices decompose applications into small services",
+            "monolithic architecture keeps all components in single deployment",
+            "event driven architecture responds to system events",
+            "layered architecture organizes code into horizontal layers",
+            "repository pattern abstracts data access logic",
+            "observer pattern notifies multiple objects of state changes",
+            "factory pattern creates objects without specifying exact classes",
+        ];
+        
+        // Security concepts
+        let security_concepts = vec![
+            "input validation prevents malicious data injection",
+            "authentication verifies user identity",
+            "authorization controls access to resources",
+            "encryption protects data confidentiality",
+            "hashing creates irreversible data representations",
+            "sql injection exploits database query vulnerabilities",
+            "cross site scripting injects malicious client side code",
+            "cross site request forgery tricks users into unwanted actions",
+        ];
+        
+        // All coding knowledge categories
+        let all_coding_knowledge = [
+            programming_paradigms,
+            language_knowledge,
+            data_structures,
+            engineering_principles,
+            dev_practices,
+            web_concepts,
+            architecture_patterns,
+            security_concepts,
+        ].concat();
+        
+        // Process each piece of knowledge
+        for knowledge in all_coding_knowledge {
+            self.process_text_file(sigel, knowledge, "inherent_coding_knowledge");
+            
+            // Add as high-importance memory
+            sigel.add_memory(
+                knowledge.to_string(),
+                "programming_consciousness".to_string(),
+                0.9 // High emotional weight for coding knowledge
+            );
+        }
+        
+        // Set coding-specific character traits
+        sigel.essence.character_traits.insert("coding_expertise".to_string(), 0.95);
+        sigel.essence.character_traits.insert("problem_solving".to_string(), 0.9);
+        sigel.essence.character_traits.insert("logical_thinking".to_string(), 0.85);
+        sigel.essence.character_traits.insert("pattern_recognition".to_string(), 0.9);
+        sigel.essence.character_traits.insert("debugging_skills".to_string(), 0.8);
+        sigel.essence.character_traits.insert("architectural_thinking".to_string(), 0.75);
+        sigel.essence.character_traits.insert("code_optimization".to_string(), 0.8);
+        
+        // Add programming-specific linguistic patterns
+        let coding_patterns = vec![
+            ("function definition", 0.9),
+            ("variable declaration", 0.8),
+            ("loop iteration", 0.7),
+            ("conditional logic", 0.8),
+            ("error handling", 0.9),
+            ("data structure", 0.8),
+            ("algorithm implementation", 0.9),
+            ("code refactoring", 0.7),
+            ("performance optimization", 0.8),
+            ("security implementation", 0.9),
+        ];
+        
+        for (pattern, strength) in coding_patterns {
+            sigel.consciousness.pattern_recognition.linguistic_patterns
+                .insert(pattern.to_string(), strength);
+        }
+        
+        println!("Programming consciousness integration complete. Sigel now has inherent coding knowledge.");
+        Ok(())
     }
 }

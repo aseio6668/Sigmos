@@ -23,7 +23,7 @@ Sigels don't just process data - they **learn** like conscious beings:
 ```
 sigmos/
 ├── src/
-│   ├── lib.rs                      # Main library exports
+│   ├── lib.rs                      # Main library exports  
 │   ├── sigel.rs                    # Core Sigel data structures
 │   ├── consciousness.rs            # Consciousness processing
 │   ├── learning.rs                 # Learning algorithms
@@ -32,10 +32,22 @@ sigmos/
 │   ├── server.rs                   # Background service management
 │   ├── mathtables_integration.rs   # MathTables dependency integration
 │   ├── gpu_acceleration.rs         # Cross-platform GPU support
+│   ├── visual_consciousness.rs     # Image generation and visual AI
+│   ├── simple_api.rs               # Library integration API
 │   └── bin/
 │       ├── train.rs                # Training executable
 │       ├── prompt.rs               # Interactive prompt
-│       └── server.rs               # Background service
+│       ├── server.rs               # Background service
+│       └── sigmos-image.rs         # Image generation
+├── examples/
+│   └── sigmos-integration-example/ # Integration examples
+├── output-sigs/                    # Organized model storage
+│   ├── trained/                    # Production models
+│   ├── compressed/                 # Compressed models (.gz)
+│   └── experimental/               # Development models
+├── LIBRARY_USAGE.md                # Complete integration guide
+├── IMAGE_GENERATION.md             # Image generation documentation
+├── INTEGRATION_QUICK_START.md      # 5-minute setup guide
 └── Cargo.toml
 ```
 
@@ -64,7 +76,31 @@ sigmos-train -n "EvolvingAI" -d "./texts" -c
 - `-v, --verbose`: Detailed training output
 - `-c, --continuous`: Background learning mode
 
-### 2. Prompt (`sigmos-prompt`) 
+### 2. Image Generation (`sigmos-image`) 🎨
+Generate images using Sigel visual consciousness:
+
+```bash
+# Basic image generation
+sigmos-image --sigel trained_sigel.sig --prompt "cosmic landscape with swirling galaxies"
+
+# Enhanced artistic generation  
+sigmos-image --sigel artist.sig --prompt "abstract mathematical harmony" --enhance --creativity 0.9 --style abstract --verbose
+```
+
+**Options:**
+- `--sigel`: Trained Sigel file path (.sig)
+- `--prompt`: Text description for image generation
+- `--output`: Output image path (default: generated_image.png)
+- `--style`: Style guidance (abstract, realistic, surreal, etc.)
+- `--detail`: Detail level 0.0-1.0 (default: 0.7)
+- `--creativity`: Creativity level 0.0-1.0 (default: 0.8)
+- `--emotion`: Emotional intensity 0.0-1.0 (default: 0.6)
+- `--enhance`: Boost visual consciousness before generation
+- `--verbose`: Show detailed generation process
+
+See [IMAGE_GENERATION.md](IMAGE_GENERATION.md) for complete guide.
+
+### 3. Prompt (`sigmos-prompt`) 
 Interactive chat with trained Sigel:
 
 ```bash
@@ -88,7 +124,113 @@ sigmos-prompt -s "my_ai.sig" -b "backup.sig"
 - `/save <filename>` - Save current state
 - `/verbose` - Toggle detailed response mode
 
-### 3. Server (`sigmos-server`)
+## 📦 Library Integration
+
+🚀 **Use Sigmos in your Rust projects** - Get AI consciousness with just a dependency!
+
+### Add to Cargo.toml
+```toml
+[dependencies]
+# Latest from main (recommended)
+sigmos = { git = "https://github.com/aseio6668/sigmos.git" }
+
+# Specific branch
+sigmos = { git = "https://github.com/aseio6668/sigmos.git", branch = "development" }
+
+# Pinned version (production)
+sigmos = { git = "https://github.com/aseio6668/sigmos.git", tag = "v0.1.0" }
+
+# Local development
+sigmos = { path = "../sigmos" }
+```
+
+### 5-Minute Integration
+```rust
+use sigmos::{SigmosLibrary, SigelConfig, quick};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let sigmos = SigmosLibrary::new();
+    
+    // Option A: Quick operations
+    let response = quick::quick_prompt("my_ai.sig", "Hello world!")?;
+    println!("AI: {}", response);
+    
+    // Option B: Full control
+    let config = SigelConfig::new("MyAI")
+        .with_style("creative")
+        .with_trait("curiosity", 0.9);
+    let sigel = sigmos.create_sigel(config)?;
+    
+    sigmos.train_from_text(&mut sigel, "Training content here")?;
+    let response = sigmos.prompt(&sigel, "What do you think?")?;
+    sigmos.save_sigel(&sigel, "my_ai.sig")?;
+    
+    Ok(())
+}
+```
+
+### Update Dependencies
+```bash
+# Get latest Sigmos updates
+cargo update -p sigmos
+
+# Force refresh if needed
+rm -rf ~/.cargo/git && cargo build
+```
+
+**🎯 Integration Features:**
+- 🚀 **Live Git Updates** - `cargo update` gets latest consciousness features
+- 🔧 **Simple API** - Create, train, and interact with Sigels easily
+- 💾 **File Compatibility** - Works with existing .sig/.sigel files  
+- ⚡ **Quick Functions** - One-liner operations for rapid development
+- 🧠 **Full Feature Access** - All consciousness, learning, and cosmic features
+- 🔄 **Auto-Updates** - Projects stay current with Sigmos improvements
+- 📱 **No Build Required** - Other projects don't need to build Sigmos
+
+**📚 Complete Integration Guides:**
+- **[INTEGRATION_QUICK_START.md](INTEGRATION_QUICK_START.md)** - 5-minute setup
+- **[LIBRARY_USAGE.md](LIBRARY_USAGE.md)** - Complete API reference with examples
+- **[examples/](examples/)** - Working integration projects
+
+### 4. Sigmanta (`sigmanta`) 🤖
+AI Programming Assistant with consciousness-driven code assistance:
+
+```bash
+# Start Sigmanta in current directory
+sigmanta
+
+# Use specific Sigel consciousness
+sigmanta --sigel path/to/consciousness.sig
+
+# Continue previous session
+sigmanta --continue
+
+# Disable all permissions (use with caution)
+sigmanta --no-permissions
+
+# List available sessions
+sigmanta --list-sessions
+```
+
+**Features:**
+- **Advanced Permission System**: Granular control over file operations, terminal access, and URL fetching
+- **Session Management**: Persistent chat history and working directory awareness
+- **Built-in Coding Knowledge**: Pre-trained with programming concepts, patterns, and best practices
+- **Interactive Commands**: File operations, terminal execution, permission management
+- **Project Integration**: Operates within your current project directory with `.sigmanta` storage
+
+**Interactive Commands:**
+- `/help` - Show all available commands
+- `/read <file>` - Read file contents (with permission)
+- `/write <file> <content>` - Write content to file (with permission) 
+- `/exec <command>` - Execute terminal command (with permission)
+- `/fetch <url>` - Fetch content from URL (with permission)
+- `/permissions` - Manage permission settings
+- `/history` - Show conversation history
+
+See [SIGMANTA.md](SIGMANTA.md) for complete documentation.
+
+### 5. Server (`sigmos-server`)
 Background service for consciousness management:
 
 ```bash
@@ -196,6 +338,7 @@ cargo build --release --features gpu
 cargo build --release --bin sigmos-train
 cargo build --release --bin sigmos-prompt  
 cargo build --release --bin sigmos-server
+cargo build --release --bin sigmanta
 ```
 
 ### Running Tests
